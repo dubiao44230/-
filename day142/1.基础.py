@@ -19,7 +19,7 @@
 """
     了解：C语言、Java   大学学过
     
-    C vs Python:  c语言是python的底层实现，解释器就是由Python编写的。
+    C vs Python:  c语言是python的底层实现，解释器就是由c编写的。
                   C语言开发的程序执行效率高；开发效率低（内存的管理）；python开发效率更好。
                   
     Java vs Python： 同一个级别，都需要解释器来解释代码。
@@ -72,13 +72,20 @@ hex(3453)
              12            00001100 
     再将以上二进制拼接起来计算十进制结果：00001010 00000011 00001001 00001100 = ？
 
+def change(ip):
+    ip_ls = ip.split('.')
+    ls = [bin(int(i)) for i in ip_ls]
+    str_ls = [str(i).replace('0b', (8-len(i)+2)*'0') for i in ls]
+    return ' '.join(str_ls)
+ip = change('10.3.9.12')
+print(ip)
 """
 
 # 6. 字节码和机器码
 """
     机器码：是汇编的结果，给操作系统直接读取使用。
     
-    字节码： xxx.pyc 文件
+    字节码： xxx.pyc 文件,py文件经过解释器解释成的.pyc文件
 """
 
 # 7. 执行脚本头文件 #!/usr/bin/env python
@@ -151,9 +158,38 @@ v1 = 'x1' if 1==1 else 'x2'
         {'id': 2, 'name': '白亨福', 'age': 18, 'pid': None,'children':[{'id': 6, 'name': '张思雨', 'age': 18, 'pid': 2}]},
         {'id': 3, 'name': '崔凯', 'age': 18, 'pid': None,'children':[]},
     ]
+   
+data = {}
+result = []
+for item in data_list:
+    item['children'] = []
+    data[item['id']] = item
+
+for item in data_list:
+    pid = item['pid']
+    if not pid:
+        continue
+    data[pid]['children'].append(item)
+for id in data:
+    result.append(data[id])
+
+print(result)
+ 
     
 练习题：
     v = [11,232,122,13,122,31,123,111]  获取列表中第二大的数字。
+    
+max = v[0]
+maxt = v[0]
+i = 1
+while len(v) > i:
+    if v[i] > max:
+        maxt = max
+        max = v[i]
+    elif v[i] >maxt:
+        maxt = v[i]
+    i += 1
+print(maxt)
 
 示例一：
     data = [
@@ -383,6 +419,17 @@ print([m(2) for m in num()])
 """
 
 # 16. 玩玩
+
+# def outer(value):
+#
+#     print(value)
+#
+#
+# func_list = []
+# for i in range(10):
+#     func_list.append(outer(i))
+
+
 """
 def outer(value):
     def inner():
@@ -403,6 +450,7 @@ func_list[4]()
 """
 
 # 17. 生成器
+
 """
 def func():
     yield 1
@@ -412,6 +460,17 @@ def func():
 obj = func()
 
 # 练习：通过yield自己实现一个类似于py3 range的功能
+def func(x):
+    i = 0
+    while x > i:
+        i += 1
+        yield i
+
+obj = func(3)
+print(list(obj))
+
+
+
 
 # 补充：
 # py3:
@@ -423,6 +482,13 @@ obj = func()
 """
 
 # 18. 常见的内置函数
+
+
+# from functools import reduce
+# li = [11, 22, 33]
+#
+# result = reduce(lambda arg1, arg2: arg1 + arg2, li)
+# print(result)   # 66
 """
     max、min、len、bin、oct、hex、zip
     
@@ -441,6 +507,9 @@ obj = func()
     - match/search区别？
     - 贪婪匹配
     - 常见正则：手机、邮箱、IP
+    邮箱：\w[-\w.+]*@([A-Za-z0-9][-A-Za-z0-9]+\.)+[A-Za-z]{2,14}
+    手机号：0?(13|14|15|17|18|19)[0-9]{9}
+    url：^((https|http|ftp|rtsp|mms)?:\/\/)[^\s]+
 """
 
 
@@ -448,7 +517,7 @@ obj = func()
 """
     - 基础：三大特性，封装、继承、多态
             - 封装，对象、类。  应用场景：分页组件；stark组件
-            - 继承，多继承继承顺序mro；经典类和新式类；super;  应用场景：drf视图
+            - 继承，多继承继承顺序mro；经典类和新式类；super安照对象的mro顺序往上找;  应用场景：drf视图
             
                 class Base1(object):
                     def func(self):
@@ -555,6 +624,27 @@ obj = func()
             print(result)
 
 """
+class Foo(object):
+    def __init__(self,num):
+        self.num = num
+
+    def __add__(self, other):
+        return self.num + other.num
+
+obj1 = Foo(11)
+obj2 = Foo(22)
+
+result = obj1 + obj2
+
+print(result)
+
+
+
+
+
+
+
+
 
 
 # 22. 反射
@@ -586,6 +676,8 @@ obj = func()
     
 """
 
+
+
 # 23. py2和py3的区别？
 """
 字符串和字节
@@ -593,8 +685,13 @@ obj = func()
     py3： str      -> encode utf-8 ->      bytes 
 
 经典类和新式类
-    py2：经典类、新式类
+    py2：经典类、新式类   
+        经典类：不用主动继承object，没有mro和super方法
+        新式类：主动继承object
     py3：新式类
+        python3里全部都是新式类     新式类默认继承object
+    
+python3：引进了yield from  可以引用另外一个生成器
 yield from
     def foo():
         yield 666
@@ -610,11 +707,30 @@ yield from
     
     for item in obj:
         print(item)
+        
+        
 默认解释器编码
+
+
 range和xrange
+    python3：range（）是一个生成器
+    python2：range（）是一个列表，xrange是生成器 
+
 readlines和xreadlines
+    readlines:返回一个列表
+    xreadlines：防火一个生成器
+    python3中推荐使用
+    for i in f：这种写法
+
 print
+    python2x: print '内容' print('内容')
+    python3x: print('内容')
+
 input/raw_input
+   python2x：
+       input:会根据用户的输入来做类型的转换
+       raw_input:则会把用户的输入都作为一个字符串来处理
+   python3x:把用户的输入都作为一个字符串来处理
 ...
 
 
@@ -622,8 +738,26 @@ input/raw_input
 
 
 # 24. 给你一个路径“D:\EVCapture” 找到目录下的所有文件（子目录中的文件）。
+# import os
+# s = os.walk('D:\python学习\python学习\面试题')
+# print(list(s))
 """
 os.walk
+
+os.walk(top[, topdown=True[, onerror=None[, followlinks=False]]])
+
+top -- 是你所要遍历的目录的地址, 返回的是一个三元组(root,dirs,files)。
+
+    root 所指的是当前正在遍历的这个文件夹的本身的地址
+    dirs 是一个 list ，内容是该文件夹中所有的目录的名字(不包括子目录)
+    files 同样是 list , 内容是该文件夹中所有的文件(不包括子目录)
+topdown --可选，为 True，则优先遍历 top 目录，否则优先遍历 top 的子目录(默认为开启)。如果 topdown 参数为 True，walk 会遍历top文件夹，与top 文件夹中每一个子目录。
+
+onerror -- 可选， 需要一个 callable 对象，当 walk 需要异常时，会调用。
+
+followlinks -- 可选， 如果为 True，则会遍历目录下的快捷方式(linux 下是 symbolic link)实际所指的目录(默认关闭)。
+
+for root, dirs, files in os.walk(".", topdown=False):
 """
 
 # 25. 一行代码实现两个值的互换 & 一行实现 9*9 乘法表
@@ -635,7 +769,7 @@ b = 2
 # 26. 利用面向对象创建一个栈。
 """
 class Stack(object):
-    
+    def __init__
     def push(self,item):
         pass
     
@@ -643,8 +777,23 @@ class Stack(object):
         pass
 """
 
+class Stack(object):
 
+    li = []
 
+    def __init__(self, ):
+        self.li = Stack.li
+
+    def push(self,item):
+        return self.li.append(item)
+
+    def pop(self):
+        return self.li.pop()
+
+s = Stack()
+s.push(1)
+s.push(2)
+print(s.pop())
 
 
 

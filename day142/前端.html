@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src="https://cdn.bootcss.com/vue/2.5.17-beta.0/vue.js"></script>
+    <script src="https://cdn.bootcss.com/vue-router/3.0.1/vue-router.js"></script>
+</head>
+<body>
+<script>
+    var name = 'alex';
+    var v = {
+        name:'mjj',
+        func:function () {
+            console.log(this.name); // mjj
+            var that = this;
+            (function () {
+                console.log(that.name); // mjj
+            })()
+        }
+    };
+    v.func()
+</script>
+</body>
+</html>
